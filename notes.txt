@@ -1,0 +1,3 @@
+tor cli
+
+instead of connecting directly to another server socket, we will connect to a proxy server from tor then connect to the server we were trying to connect.
