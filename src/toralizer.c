@@ -1,11 +1,5 @@
 
 #include "toralizer.h"
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 /*
   1.2.3.4 80
@@ -35,6 +29,8 @@ int main(int argc, char *argv[]) {
   Res *res;
 
   int success;
+
+  char tmp[512];
 
   struct sockaddr_in sock;
 
@@ -102,6 +98,24 @@ int main(int argc, char *argv[]) {
     return -1;
   }
   printf("Successfully connected through the proxy to %s:%d\n", host, port);
+
+  memset(tmp, 0, 512);
+
+  snprintf(tmp, 511,
+           "HEAD / HTTP/1.0\r\n"
+           "Host: www.google.com\r\n"
+           "\r\n");
+
+  if (write(s, tmp, strlen(tmp)) < 0) {
+    perror("write buffer");
+    free(req);
+    close(s);
+    return -1;
+  }
+  memset(tmp, 0, 512);
+  read(s, tmp, 511);
+  printf("'%s'\n", tmp);
+
   close(s);
   free(req);
   return 0;
