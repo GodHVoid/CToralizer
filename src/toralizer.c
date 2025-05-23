@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
   int success;
 
-  char tmp[512];
+  char tmp[1024];
 
   struct sockaddr_in sock;
 
@@ -99,11 +99,12 @@ int main(int argc, char *argv[]) {
   }
   printf("Successfully connected through the proxy to %s:%d\n", host, port);
 
-  memset(tmp, 0, 512);
+  memset(tmp, 0, 1024);
 
-  snprintf(tmp, 511,
-           "HEAD / HTTP/1.0\r\n"
+  snprintf(tmp, 1023,
+           "GET / HTTP/1.0\r\n"
            "Host: www.google.com\r\n"
+           "Connection: close\r\n"
            "\r\n");
 
   if (write(s, tmp, strlen(tmp)) < 0) {
@@ -112,8 +113,8 @@ int main(int argc, char *argv[]) {
     close(s);
     return -1;
   }
-  memset(tmp, 0, 512);
-  read(s, tmp, 511);
+  memset(tmp, 0, 1024);
+  read(s, tmp, 1023);
   printf("'%s'\n", tmp);
 
   close(s);
